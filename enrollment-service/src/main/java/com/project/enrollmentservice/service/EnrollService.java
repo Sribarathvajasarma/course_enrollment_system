@@ -1,5 +1,6 @@
 package com.project.enrollmentservice.service;
 
+import com.project.enrollmentservice.dto.AvailablityResponse;
 import com.project.enrollmentservice.dto.EnrollCoursesDto;
 import com.project.enrollmentservice.dto.EnrollmentRequest;
 import com.project.enrollmentservice.model.EnrollCourses;
@@ -8,7 +9,9 @@ import com.project.enrollmentservice.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +21,7 @@ import java.util.UUID;
 public class EnrollService {
 
     private final EnrollmentRepository enrollmentRepository;
+    private final WebClient webClient;
 
     public void enroll(EnrollmentRequest enrollmentRequest){
 
@@ -31,7 +35,25 @@ public class EnrollService {
 
         enrollment.setEnrollCoursesList(enrollCourses);
 
-        enrollmentRepository.save(enrollment);
+        List<String> courseCodes = enrollment.getEnrollCoursesList().stream()
+                .map(EnrollCourses::getCourseCode)
+                .toList();
+
+        AvailablityResponse[] availablityResponses = webClient.get()
+                .uri("http://localhost:8082/api/availablity", uriBuilder -> uriBuilder.queryParam("courseCode", courseCodes).build())
+                        .retrieve()
+                                .bodyToMono(AvailablityResponse[].class)
+                                        .block();
+
+        boolean allCoursesAvailable = Arrays.stream(availablityResponses).allMatch(AvailablityResponse::isAvailable);
+
+        if(allCoursesAvailable){
+            enrollmentRepository.save(enrollment);
+
+        }else {
+            throw new IllegalArgumentException("There is no slot available for this course");
+        }
+
 
     }
 

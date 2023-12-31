@@ -1,9 +1,12 @@
 package com.project.availabilityservice.controller;
 
+import com.project.availabilityservice.dto.AvailablityResponse;
 import com.project.availabilityservice.service.AvailablityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/availablity")
@@ -11,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 public class AvailablityController {
 
     private final AvailablityService availablityService;
-    @GetMapping("/{course-code}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public boolean isAvailable(@PathVariable("course-code") String courseCode){
+    public List<AvailablityResponse> isAvailable(@RequestParam List<String> courseCode){
         return availablityService.isAvailable(courseCode);
     }
 }
