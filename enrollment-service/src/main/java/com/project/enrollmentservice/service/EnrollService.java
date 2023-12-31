@@ -21,7 +21,7 @@ import java.util.UUID;
 public class EnrollService {
 
     private final EnrollmentRepository enrollmentRepository;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     public void enroll(EnrollmentRequest enrollmentRequest){
 
@@ -39,8 +39,8 @@ public class EnrollService {
                 .map(EnrollCourses::getCourseCode)
                 .toList();
 
-        AvailablityResponse[] availablityResponses = webClient.get()
-                .uri("http://localhost:8082/api/availablity", uriBuilder -> uriBuilder.queryParam("courseCode", courseCodes).build())
+        AvailablityResponse[] availablityResponses = webClientBuilder.build().get()
+                .uri("http://AVAILABLITY-SERVICE/api/availablity", uriBuilder -> uriBuilder.queryParam("courseCode", courseCodes).build())
                         .retrieve()
                                 .bodyToMono(AvailablityResponse[].class)
                                         .block();
