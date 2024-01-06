@@ -23,7 +23,7 @@ public class EnrollService {
     private final EnrollmentRepository enrollmentRepository;
     private final WebClient.Builder webClientBuilder;
 
-    public void enroll(EnrollmentRequest enrollmentRequest){
+    public String enroll(EnrollmentRequest enrollmentRequest){
 
         Enrollment enrollment = new Enrollment();
         enrollment.setEnrollmentNumber(UUID.randomUUID().toString());
@@ -49,7 +49,7 @@ public class EnrollService {
 
         if(allCoursesAvailable){
             enrollmentRepository.save(enrollment);
-
+            return "Enrolled successfully";
         }else {
             throw new IllegalArgumentException("There is no slot available for this course");
         }
