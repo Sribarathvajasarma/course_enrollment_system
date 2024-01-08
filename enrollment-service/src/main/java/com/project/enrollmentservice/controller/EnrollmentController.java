@@ -28,6 +28,5 @@ public class EnrollmentController {
 
     public CompletableFuture<String> fallbackMethod(EnrollmentRequest enrollmentRequest, RuntimeException runtimeException){
         return CompletableFuture.supplyAsync(()->"Sorry, Something went wrong, please order after some time.");
-
     }
 }

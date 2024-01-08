@@ -3,10 +3,12 @@ package com.project.enrollmentservice.service;
 import com.project.enrollmentservice.dto.AvailablityResponse;
 import com.project.enrollmentservice.dto.EnrollCoursesDto;
 import com.project.enrollmentservice.dto.EnrollmentRequest;
+import com.project.enrollmentservice.event.EnrollmentEvent;
 import com.project.enrollmentservice.model.EnrollCourses;
 import com.project.enrollmentservice.model.Enrollment;
 import com.project.enrollmentservice.repository.EnrollmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,7 +24,7 @@ public class EnrollService {
 
     private final EnrollmentRepository enrollmentRepository;
     private final WebClient.Builder webClientBuilder;
-
+    //private final KafkaTemplate<String, EnrollmentEvent> kafkaTemplate;
     public String enroll(EnrollmentRequest enrollmentRequest){
 
         Enrollment enrollment = new Enrollment();
@@ -49,6 +51,7 @@ public class EnrollService {
 
         if(allCoursesAvailable){
             enrollmentRepository.save(enrollment);
+            //kafkaTemplate.send("notificationTopic", new EnrollmentEvent(enrollment.getEnrollmentNumber()));
             return "Enrolled successfully";
         }else {
             throw new IllegalArgumentException("There is no slot available for this course");

@@ -19,9 +19,9 @@ public class AvailablityService {
     @SneakyThrows
     @Transactional(readOnly = true)
     public List<AvailablityResponse> isAvailable(List<String> courseCode){
-        log.info("wait started");
-        Thread.sleep(10000);
-        log.info("wait ended");
+//        log.info("wait started");
+//        Thread.sleep(10000);
+//        log.info("wait ended");
         return availablityRepository.findByCourseCodeIn(courseCode).stream()
                 .map(availablity ->
                     AvailablityResponse.builder().courseCode(availablity.getCourseCode())
